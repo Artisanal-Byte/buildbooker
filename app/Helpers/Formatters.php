@@ -1,9 +1,9 @@
 <?php
 
-if (! function_exists('formatCurrency')) {
+if (!function_exists('formatCurrency')) {
     function formatCurrency($amount): string
     {
-        $decimal = (string) ($amount - floor($amount));
+        $decimal = (string)($amount - floor($amount));
         $money = floor($amount);
         $length = strlen($money);
         $delimiter = '';
@@ -22,6 +22,8 @@ if (! function_exists('formatCurrency')) {
 
         if ($decimal != '0') {
             $result .= $decimal;
+        } else {
+            $result .= ".00";
         }
 
         return $result;
