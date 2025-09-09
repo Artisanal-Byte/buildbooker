@@ -124,8 +124,8 @@ function formatCurrency(amount) {
                                     </p>
                                 </div>
                                 <p class="text-2xl">
-                                    <span class="text-green-600">{{formatCurrency(unit.base_received_amount) }}</span> /
-                                    <span class="text-red-500">{{ formatCurrency(unit.base_amount) }}</span>
+                                    <span class="text-green-600">₹ {{unit.formatted_base_received_amount }}</span> /
+                                    <span class="text-red-500">₹ {{ unit.formatted_base_amount }}</span>
                                 </p>
                             </div>
 
@@ -138,7 +138,7 @@ function formatCurrency(amount) {
                                     </p>
                                 </div>
                                 <p class="text-2xl">
-                                    <span class="text-green-600">{{ formatCurrency(unit.formatted_gst_received_amount) }}</span> /
+                                    <span class="text-green-600">₹ {{ unit.formatted_gst_received_amount }}</span> /
                                     <span class="text-red-500">₹ {{ unit.formatted_gst_due_amount }}</span>
                                 </p>
                             </div>
@@ -204,7 +204,7 @@ function formatCurrency(amount) {
                                                 <td class="px-4 py-2 border">{{ t.receipt_number }}</td>
                                                 <td class="px-4 py-2 border">{{ formatCurrency(t.transaction_amount) }}
                                                 </td>
-                                                <td class="px-4 py-2 border">{{ t.payment_type ?? '-' }}</td>
+                                                <td class="px-4 py-2 border">{{ ucwords(t.payment_type) ?? '-' }}</td>
                                                 <td class="px-4 py-2 border">{{ t.bank_name ?? '-' }}</td>
                                                 <td class="px-4 py-2 border">{{ t.bank_branch ?? '-' }}</td>
                                                 <td class="px-4 py-2 border">{{ t.receipt_date ?? '-' }}</td>
