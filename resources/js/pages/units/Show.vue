@@ -1,14 +1,14 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { usePage } from '@inertiajs/vue3'
-import { router } from '@inertiajs/vue3'
+// import { usePage } from '@inertiajs/vue3'
+// import { router } from '@inertiajs/vue3'
 import BackButton from '@/components/BackButton.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import ReceiptModel from '@/components/ReceiptModel.vue'
 import ButtonLink from '@/components/ButtonLink.vue'
 
 const props = defineProps(['unit', 'project', 'organisation', 'transaction'])
-
+console.log(props.unit);
 // Capitalize first letter of each word
 const ucwords = (str) => str?.replace(/\b\w/g, char => char.toUpperCase()) || ''
 
@@ -34,6 +34,7 @@ const tabClass = (tab) => {
     ]
 }
 function formatCurrency(amount) {
+    console.log(amount);
     if (amount == null || amount === "") return "₹ 0.00";
     return "₹ " + Number(amount).toLocaleString("en-IN", {
         minimumFractionDigits: 2,
@@ -94,7 +95,7 @@ function formatCurrency(amount) {
 
                             <div class="flex flex-col gap-4 p-8 border-b border-teal-800 text-center lg:text-left">
                                 <p class="text-xl">Selling Price</p>
-                                <p class="text-2xl">₹ {{ unit.total_amount }}</p>
+                                <p class="text-2xl">₹ {{ unit.formatted_total_amount }}</p>
                             </div>
 
                             <div
@@ -123,7 +124,7 @@ function formatCurrency(amount) {
                                     </p>
                                 </div>
                                 <p class="text-2xl">
-                                    <span class="text-green-600">{{formatCurrency(unit.formatted_base_received_amount) }}</span> /
+                                    <span class="text-green-600">{{formatCurrency(unit.base_received_amount) }}</span> /
                                     <span class="text-red-500">{{ formatCurrency(unit.base_amount) }}</span>
                                 </p>
                             </div>
