@@ -169,7 +169,7 @@ function formatAmount(value)
                              class="mb-6 flex flex-col lg:flex-row justify-between px-8 p-4 border rounded-md shadow-sm">
                             <!-- Base Amount -->
                             <div class="flex flex-col gap-4 p-4 text-center lg:text-left">
-                                <p class="font-bold">Base Amount:</p>
+                                <p class="font-bold">Base Amount(<span class="text-sm">₹ {{ state.selectedUnit.formatted_base_amount }}</span>)</p>
                                 <p class="text-xl"><span class="text-green-600">Received</span> /<span
                                     class="text-red-500"> Due </span></p>
                                 <p class="text-2xl">
@@ -183,7 +183,7 @@ function formatAmount(value)
 
                             <!-- GST Amount -->
                             <div class="flex flex-col gap-4 p-4 text-center lg:text-left">
-                                <p class="font-bold">GST Amount:</p>
+                                <p class="font-bold">GST Amount(<span class="text-sm">₹ {{ state.selectedUnit.formatted_gst_amount }}</span>)</p>
                                 <p class="text-xl"><span class="text-green-600">Received</span> /<span
                                     class="text-red-500"> Due </span></p>
                                 <p class="text-2xl">
@@ -196,7 +196,7 @@ function formatAmount(value)
                             <div class="border-r border-teal-800"></div>
                             <!-- Total -->
                             <div class="flex flex-col gap-4 p-4 text-center lg:text-left">
-                                <p class="font-bold">Total Amount:</p>
+                                <p class="font-bold">Total Amount(<span class="text-sm">₹ {{ state.selectedUnit.formatted_total_amount }}</span>)</p>
                                 <!-- <p class="text-2xl">
                                     ₹ {{ state.selectedUnit.formatted_total_amount || '—' }}
                                 </p> -->
