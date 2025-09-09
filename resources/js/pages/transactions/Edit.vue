@@ -50,11 +50,12 @@ onMounted(() => {
 
 <template>
     <AppLayout>
+
         <div class="py-5 lg:py-10">
             <div class="max-w-4xl mx-auto px-6 lg:px-0 mt-5 lg:mt-0">
                 <div class="flex justify-between max-w-4xl w-full mx-auto mb-4">
                     <!-- <BackButton :prevRoute="route('transactions.index',)" /> -->
-                     <BackButton :prevRoute="route('transactions.index', { organisation: project.id })" />
+                    <BackButton :prevRoute="route('transactions.index', { organisation: project.id })" />
                 </div>
 
                 <div
@@ -63,10 +64,20 @@ onMounted(() => {
                         <h2 class="text-2xl font-bold text-center text-primary mb-4">
                             Edit Transaction for Unit {{ unit.unit_no }}
                         </h2>
-                        <p class="text-center text-gray-700 border-b border-gray-300 pb-2">
+                        <p class="text-center text-gray-700 ">
                             Receipt: <span class="font-medium">{{ transaction.receipt_number }}</span>
                         </p>
+                        <div class="flex justify-between my-5 border-b border-gray-300 pb-2">
+                            <h1>
+                                Customer Name: <span class="font-medium"> {{ transaction.customer.name }}</span>
+                            </h1>
+                            <h1>
+                                Mobile No: <span class="font-medium"> {{ transaction.customer.mobile }}</span> 
+                            </h1>
+                           
+                        </div>
                     </div>
+
 
                     <div class=" mt-10 bg-gray-100">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
