@@ -118,21 +118,21 @@ function formatCurrency(amount) {
                             <!-- Base Amount -->
                             <div class="flex flex-col gap-4 p-8 border-r border-teal-800 text-center lg:text-left">
                                 <div>
-                                    <p class="text-xl">Base Amount</p>
+                                    <p class="text-xl flex justify-start items-center">Base Amount (<span class="text-sm">₹ {{ unit.formatted_base_amount }}</span>)</p>
                                     <p><span class="text-green-600">Received</span> / <span
                                             class="text-red-500">Due</span>
                                     </p>
                                 </div>
                                 <p class="text-2xl">
                                     <span class="text-green-600">₹ {{unit.formatted_base_received_amount }}</span> /
-                                    <span class="text-red-500">₹ {{ unit.formatted_base_amount }}</span>
+                                    <span class="text-red-500">₹ {{ unit.formatted_base_due_amount }}</span>
                                 </p>
                             </div>
 
                             <!-- GST Amount -->
                             <div class="flex flex-col gap-4 p-8 border-r border-teal-800 text-center lg:text-left">
                                 <div>
-                                    <p class="text-xl">GST Amount</p>
+                                    <p class="text-xl flex justify-start items-center">GST Amount (<span class="text-sm">₹ {{ unit.formatted_gst_amount }}</span>)</p>
                                     <p><span class="text-green-600">Received</span> / <span
                                             class="text-red-500">Due</span>
                                     </p>
@@ -146,7 +146,7 @@ function formatCurrency(amount) {
                             <!-- Total Amount -->
                             <div class="flex flex-col gap-4 p-8 border-teal-800 text-center lg:text-left">
                                 <div>
-                                    <p class="text-xl">Total Amount</p>
+                                    <p class="text-xl flex justify-start items-center">Total Amount (<span class="text-sm">₹ {{ unit.formatted_total_amount }}</span>) </p>
                                     <p><span class="text-green-600">Received</span> / <span
                                             class="text-red-500">Due</span>
                                     </p>
