@@ -12,7 +12,13 @@ class OrganisationController extends Controller
 {
     public function edit()
     {
-        return Inertia::render('organisation/Edit', ['organisation' => Organisation::find(auth()->user()->organisation_id)]);
+        $isDisableGstToggle = false;
+        $organisation = Organisation::find(auth()->user()->organisation_id);
+        $hasTrancactionsWithGst = $organisation->transactions()->where('receipt_number', 'LIKE', '#G%')->whereNull('transactions.deleted_at')->count() > 0;
+        if ($hasTrancactionsWithGst || $organisation->seperate_sequence_for_gst) {
+            $isDisableGstToggle = true;
+        }
+        return Inertia::render('organisation/Edit', ['organisation' => $organisation, "disabled" => $isDisableGstToggle]);
     }
 
 

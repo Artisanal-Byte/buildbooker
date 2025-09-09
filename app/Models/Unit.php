@@ -34,6 +34,8 @@ class Unit extends Model
 
     // Accessors
     protected $appends = [
+        'base_received_amount',
+        'gst_received_amount',
         'formatted_total_amount',
         'formatted_base_amount',
         'formatted_gst_amount',
@@ -44,6 +46,24 @@ class Unit extends Model
         'formatted_base_due_amount',
         'formatted_gst_due_amount',
     ];
+
+    protected function baseReceivedAmount(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                return $this->transactions()->where('gst', false)->sum('transaction_amount');
+            },
+        );
+    }
+
+    protected function gstReceivedAmount(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                return $this->transactions()->where('gst', true)->sum('transaction_amount');
+            },
+        );
+    }
 
     protected function formattedTotalAmount(): Attribute
     {
@@ -131,7 +151,7 @@ class Unit extends Model
     {
         // When a Project is soft-deleted
         static::deleting(function ($unit): void {
-            if (! $unit->isForceDeleting()) {
+            if (!$unit->isForceDeleting()) {
                 $unit->transactions()->delete();
             }
         });

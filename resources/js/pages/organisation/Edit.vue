@@ -1,11 +1,11 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { router, useForm, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/layouts/AppLayout.vue'
 import FormInput from '@/components/FormInput.vue'
 import { Icon } from "@iconify/vue";
 
-const props = defineProps(['organisation'])
+const props = defineProps(['organisation', "disabled"])
 const imagePreview = ref(props.organisation.logo || '')
 const toast = new ToastMagic();
 const form = useForm({
@@ -15,7 +15,10 @@ const form = useForm({
     logo: null,
     seperate_sequence_for_gst: props.organisation.seperate_sequence_for_gst || false, // GST column,
     isChangeToggleGst: false, // to track if toggle is changed
+    disable_seperate_sequence_for_gst: props.organisation.disable_seperate_sequence_for_gst || false, // to disable toggle if needed
 })
+
+
 
 function handleFileSelect(event) {
     const file = event.target.files[0]
@@ -124,9 +127,10 @@ function toggleActive() {
                                     <Icon icon="material-symbols-light:info-outline" width="24" height="24" />
                                 </div>
                                 <div>
-                                    <button @click="toggleActive" :class="[
+                                    <button :disabled="disabled" @click="toggleActive" :class="[
                                         'relative inline-flex items-center h-6 rounded-full w-12 transition-colors focus:outline-none',
-                                        form.seperate_sequence_for_gst ? 'bg-primary' : 'bg-gray-300'
+                                        form.seperate_sequence_for_gst ? 'bg-primary' : 'bg-gray-300',
+                                        disabled ? 'opacity-50 cursor-not-allowed' : '' // styling for disabled
                                     ]">
                                         <span :class="[
                                             'inline-block w-6 h-6 transform bg-white rounded-full shadow-md transition-transform',
@@ -134,7 +138,7 @@ function toggleActive() {
                                         ]"></span>
                                     </button>
                                     <span class="ml-3 text-gray-700">{{ form.seperate_sequence_for_gst ? 'Yes' : 'No'
-                                    }}</span>
+                                        }}</span>
                                 </div>
                             </div>
 
