@@ -61,17 +61,17 @@ function submitForm() {
 
                 <!-- Customer Info -->
                 <div class="flex flex-col gap-4 mt-4">
-                    <FormInput label="Customer Name" id="customer_name" v-model="form.customer.name" required
+                    <FormInput label="Customer Name" id="customer_name" v-model="form.customer.name"
                         readonly />
 
                     <div class="flex gap-2">
                         <FormInput label="Mobile No." id="customer_mobile" type="number" v-model="form.customer.phone"
                             required readonly class="w-full" />
-                        <FormInput label="Email" id="customer_email" type="email" v-model="form.customer.email" required
+                        <FormInput label="Email" id="customer_email" type="email" v-model="form.customer.email"
                             readonly class="w-full" />
                     </div>
 
-                    <FormTextarea label="Address" id="customer_address" v-model="form.customer.address" required
+                    <FormTextarea label="Address" id="customer_address" v-model="form.customer.address"
                         readonly />
                 </div>
 
