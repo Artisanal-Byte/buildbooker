@@ -9,11 +9,10 @@ use App\Models\Project;
 use App\Models\Transaction;
 use App\Models\Unit;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Exception;
 
 class TransactionController extends Controller
 {
@@ -24,7 +23,7 @@ class TransactionController extends Controller
 
         if ($project == null) {
             // Get all transactions for the organisation with customer and unit
-            $transactions = $organisation->transactions()->with(['customer', 'unit', 'project'])->withTrashed()->orderBy("payment_date",'desc')->get();
+            $transactions = $organisation->transactions()->with(['customer', 'unit', 'project'])->withTrashed()->orderBy("payment_date", 'desc')->get();
             return Inertia::render('transactions/Index', [
                 'transactions' => $transactions,
                 'project' => [],
@@ -70,14 +69,14 @@ class TransactionController extends Controller
 
             $organisation = Organisation::find(Auth::user()->organisation_id);
 
-            $transaction = Transaction::where('project_id', $unit->project_id);
+            $transaction = Transaction::where('project_id', $unit->project_id)->whereNot('receipt_number', 'LIKE', '#G%');
             $transactionCount = $transaction->count();
             $isGstEnabled = $organisation->seperate_sequence_for_gst ?? false;
             $increment = $transactionCount + 1;
             if ($isGstEnabled) {
                 $incrementWithGst = Transaction::where('project_id', $unit->project_id)
-                    ->where('receipt_number', 'LIKE', '#G%')
-                    ->count() + 1;
+                        ->where('receipt_number', 'LIKE', '#G%')
+                        ->count() + 1;
 
                 $receiptNumber = $request->gst
                     ? '#G' . str_pad($incrementWithGst, 5, '0', STR_PAD_LEFT)
@@ -90,19 +89,19 @@ class TransactionController extends Controller
 
 
             Transaction::create([
-                'customer_id'        => $unit->customer_id,
-                'unit_id'            => $unit->id,
-                'project_id'         => $unit->project_id,
-                'receipt_number'     => $receiptNumber,
-                'receipt_date'       => $request->receipt_date,
-                'payment_date'       => $request->payment_date,
-                'unit_no'            => $unit->unit_no,
-                'bank_name'          => $request->bank_name,
-                'bank_branch'        => $request->bank_branch,
-                'payment_type'       => $request->payment_type,
-                'payment_reference'  => $request->payment_reference,
+                'customer_id' => $unit->customer_id,
+                'unit_id' => $unit->id,
+                'project_id' => $unit->project_id,
+                'receipt_number' => $receiptNumber,
+                'receipt_date' => $request->receipt_date,
+                'payment_date' => $request->payment_date,
+                'unit_no' => $unit->unit_no,
+                'bank_name' => $request->bank_name,
+                'bank_branch' => $request->bank_branch,
+                'payment_type' => $request->payment_type,
+                'payment_reference' => $request->payment_reference,
                 'transaction_amount' => $request->transaction_amount,
-                'gst'                => $request->gst,
+                'gst' => $request->gst,
             ]);
 
             DB::commit();
@@ -110,7 +109,7 @@ class TransactionController extends Controller
             ToastMagic::success('Transaction added successfully.');
             return redirect()->route('transactions.index', [
                 'organisation' => Auth::user()->organisation_id,
-                'project'      => $unit->project_id,
+                'project' => $unit->project_id,
             ])->with('success', 'Transaction added successfully!');
         } catch (Exception $e) {
             DB::rollBack();
