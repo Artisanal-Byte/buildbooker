@@ -16,10 +16,10 @@ jobs:
       - uses: actions/checkout@v4
 
 
-      - name: Configure PHP 8.3
+      - name: Configure PHP 8.4
         uses: shivammathur/setup-php@master
         with:
-          php-version: 8.3
+          php-version: 8.4
           extensions: mbstring, ctype, fileinfo, openssl, PDO, bcmath, json, tokenizer, xml, sqlite3
 
       - name: Composer install
@@ -183,7 +183,7 @@ jobs:
             sudo rm -rf ${RELEASE_PATH}/storage
             sudo ln -s -f $STORAGE_PATH $RELEASE_PATH
             sudo ln -s -n -f $RELEASE_PATH $ACTIVE_RELEASE_PATH
-            sudo service php8.3-fpm reload
+            sudo service php8.4-fpm reload
             sudo chown -R ubuntu:www-data $ACTIVE_RELEASE_PATH
             cd ${ACTIVE_RELEASE_PATH}
 

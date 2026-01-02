@@ -1,11 +1,11 @@
 [
   {
     "name": "buildbooker",
-    "ip": "13.203.247.54",
-    "username": "ubuntu",
+    "ip": "160.191.14.84",
+    "username": "git_deployer",
     "port": "22",
     "beforeHooks": "",
     "afterHooks": "",
-    "path": "/var/www/buildbooker"
+    "path": "/var/www/artisanal_byte/buildbooker"
   }
 ]
