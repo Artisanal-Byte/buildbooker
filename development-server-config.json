@@ -6,6 +6,6 @@
     "port": "22",
     "beforeHooks": "",
     "afterHooks": "",
-    "path": "/var/www/artisanal_byte/buildbooker/current"
+    "path": "/var/www/artisanal_byte/buildbooker"
   }
 ]
