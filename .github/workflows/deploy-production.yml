@@ -83,7 +83,7 @@ jobs:
           script: |
             # Create the release directory and set ownership
             sudo mkdir -p "${{ matrix.server.path }}/releases/${GITHUB_SHA}"
-            sudo chown -R ubuntu:www-data ${{ matrix.server.path }}/releases
+            sudo chown -R git_deployer:www-data ${{ matrix.server.path }}/releases
             
             # Extract the tar.gz archive to the release directory
             sudo tar xzf ${{ matrix.server.path }}/artifacts/${GITHUB_SHA}.tar.gz -C "${{ matrix.server.path }}/releases/${GITHUB_SHA}"
@@ -98,13 +98,13 @@ jobs:
             
             # Set the correct permissions for the storage directory and subdirectories
             sudo chmod -R 0777 ${{ matrix.server.path }}/storage
-            sudo chown -R ubuntu:www-data ${{ matrix.server.path }}/storage
+            sudo chown -R git_deployer:www-data ${{ matrix.server.path }}/storage
             
             # Set specific permissions for framework directories
-            sudo chown -R ubuntu:www-data ${{ matrix.server.path }}/storage/framework
+            sudo chown -R git_deployer:www-data ${{ matrix.server.path }}/storage/framework
             
             # Ensure the bootstrap cache directory exists and set permissions
-            sudo chown -R ubuntu:www-data ${{ matrix.server.path }}/releases/${GITHUB_SHA}/bootstrap/cache
+            sudo chown -R git_deployer:www-data ${{ matrix.server.path }}/releases/${GITHUB_SHA}/bootstrap/cache
             
             # Set appropriate permissions for the SQLite database
             sudo chmod 664 ${{ matrix.server.path }}/storage/database/database.sqlite
@@ -115,8 +115,8 @@ jobs:
             sudo mkdir -p ${{ matrix.server.path }}/bootstrap/cache
             
             # Set correct ownership for storage and bootstrap/cache (to www-data)
-            sudo chown -R ubuntu:www-data ${{ matrix.server.path }}/storage
-            sudo chown -R ubuntu:www-data ${{ matrix.server.path }}/bootstrap/cache
+            sudo chown -R git_deployer:www-data ${{ matrix.server.path }}/storage
+            sudo chown -R git_deployer:www-data ${{ matrix.server.path }}/bootstrap/cache
             
             # Set the correct permissions for storage and cache directories
             sudo chmod -R 775 ${{ matrix.server.path }}/storage
@@ -183,7 +183,7 @@ jobs:
             sudo ln -s -f $STORAGE_PATH $RELEASE_PATH
             sudo ln -s -n -f $RELEASE_PATH $ACTIVE_RELEASE_PATH
             sudo service php8.4-fpm reload
-            sudo chown -R ubuntu:www-data $ACTIVE_RELEASE_PATH
+            sudo chown -R git_deployer:www-data $ACTIVE_RELEASE_PATH
             cd ${ACTIVE_RELEASE_PATH}
 
             sudo php artisan migrate --force
@@ -218,27 +218,27 @@ jobs:
           port: ${{ matrix.server.port }}
           envs: GITHUB_SHA,RELEASE_PATH,ACTIVE_RELEASE_PATH,STORAGE_PATH,BASE_PATH
           script: |
-            export PATH=$PATH:/usr/local/bin:/home/ubuntu/.nvm/versions/node/v20.16.0/bin
+            export PATH=$PATH:/usr/local/bin:/home/git_deployer/.nvm/versions/node/v20.16.0/bin
             
             # Ensure correct permissions for package.json
-            sudo chown -R ubuntu:www-data /var/www/buildbooker/releases/${{ github.sha }}/package.json
-            sudo chown -R ubuntu:www-data /var/www/buildbooker/releases/${{ github.sha }}/package-lock.json
+            sudo chown -R git_deployer:www-data /var/www/buildbooker/releases/${{ github.sha }}/package.json
+            sudo chown -R git_deployer:www-data /var/www/buildbooker/releases/${{ github.sha }}/package-lock.json
             
             
             # Ensure Puppeteer is installed locally
             cd /var/www/buildbooker/releases/${{ github.sha }}
             npm install puppeteer
-            sudo chown -R ubuntu:www-data /var/www/buildbooker/releases/${{ github.sha }}/node_modules
-            sudo chown -R ubuntu:www-data /var/www/buildbooker/releases/${{ github.sha }}/package-lock.json
+            sudo chown -R git_deployer:www-data /var/www/buildbooker/releases/${{ github.sha }}/node_modules
+            sudo chown -R git_deployer:www-data /var/www/buildbooker/releases/${{ github.sha }}/package-lock.json
             
             # Make sure `receipts` folder has right permissions
-            sudo chown -R ubuntu:www-data /var/www/buildbooker/storage
+            sudo chown -R git_deployer:www-data /var/www/buildbooker/storage
             sudo chmod -R 755 /var/www/buildbooker/storage
             
             # Make REcceipts Folder
             # make release-specific receipts folder, inherit set-gid group
             sudo mkdir -p "${{ matrix.server.path }}/releases/${GITHUB_SHA}/storage/app/public/receipts"
-            sudo chown -R ubuntu:www-data "${{ matrix.server.path }}/releases/${GITHUB_SHA}/storage"
+            sudo chown -R git_deployer:www-data "${{ matrix.server.path }}/releases/${GITHUB_SHA}/storage"
             sudo chmod -R 2775 "${{ matrix.server.path }}/releases/${GITHUB_SHA}/storage"
   
             # No need to run Puppeteer directly here because it's handled in Laravel
