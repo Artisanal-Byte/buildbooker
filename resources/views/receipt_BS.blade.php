@@ -212,7 +212,7 @@
 
                 <div class="text-sm mt-2">
                     deposits below amount for {{ ucwords($transaction->unit->type) }} Number:
-                    <input value="{{ $transaction->customer->units[0]->unit_no }}" class="my-input text-center"
+                    <input value="{{ $transaction->unit->unit_no }}" class="my-input text-center"
                         disabled>
                     at <strong>"{{ $project->name }}"</strong>, accepting all the conditions by the developers for
                     becoming a member.
