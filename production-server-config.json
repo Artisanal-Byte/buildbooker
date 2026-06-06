@@ -1,7 +1,7 @@
 [
   {
     "name": "buildbooker",
-    "ip": "160.191.14.84",
+    "ip": "217.216.79.214",
     "username": "git_deployer",
     "port": "22",
     "beforeHooks": "",
