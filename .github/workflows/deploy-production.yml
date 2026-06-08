@@ -14,10 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure PHP 8.5
+      - name: Configure PHP 8.4
         uses: shivammathur/setup-php@master
         with:
-          php-version: 8.5
+          php-version: 8.4
           extensions: mbstring, ctype, fileinfo, openssl, PDO, bcmath, json, tokenizer, xml, sqlite3
 
       - name: Composer install
