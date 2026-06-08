@@ -1,6 +1,9 @@
 <?php
 
+use Exception;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Intervention\Image\Laravel\Facades\Image;
 
 if (! function_exists('processLogoImage')) {
@@ -25,16 +28,13 @@ if (! function_exists('processLogoImage')) {
             if (! File::isDirectory($directory)) {
                 File::makeDirectory($directory, 0755, true);
             }
-            // Load image using Intervention
-            $image = Image::read($file)->scaleDown(null, 250);
-
-            // Convert to WebP if not already
-            if ($file->getClientOriginalExtension() !== 'webp') {
-                $image->toWebp(60); // Quality set to 60
-            }
+            // Keep logos crisp enough for PDF output while still optimizing size.
+            $encodedImage = Image::read($file)
+                ->scaleDown(height: 400)
+                ->toWebp(90);
 
             // Save the image to the storage path
-            $image->save($storagePath);
+            $encodedImage->save($storagePath);
 
             // Return the relative path for storage access
             return 'storage/'.$folder.'/'.$fileName;

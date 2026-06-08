@@ -1,5 +1,9 @@
 @php use Carbon\Carbon; @endphp
-@props(['project', 'transaction'])
+@props(['project', 'transaction', 'projectLogoSrc' => null])
+
+@php
+    $paymentType = strtolower((string) $transaction->payment_type);
+@endphp
 
 <!DOCTYPE html>
 <html lang="en">
@@ -98,6 +102,14 @@
             text-align: center;
         }
 
+        .text-left {
+            text-align: left;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
         .w-full {
             width: 100%;
         }
@@ -112,6 +124,10 @@
 
         .w-48 {
             width: 192px;
+        }
+
+        .h-8 {
+            height: 32px;
         }
 
         hr {
@@ -140,11 +156,11 @@
             <div class="flex justify-between">
                 <div>
                     {{-- @if (file_exists(public_path($project->logo)))
-						<img src="{{ public_path($project->logo) }}" alt="Logo" height="120" width="120">
-				@else
-						<p>[Logo missing]</p>
-				@endif --}}
-                    <img src="{{ asset($project->logo) }}" alt="Logo" height="80">
+                        <img src="{{ public_path($project->logo) }}" alt="Logo" height="120" width="120">
+                @else
+                        <p>[Logo missing]</p>
+                @endif --}}
+                    <img src="{{ $projectLogoSrc ?? $project->logo }}" alt="Logo" height="80" style="width: auto;">
                 </div>
                 <div class="contact-block">
                     <table>
@@ -166,29 +182,6 @@
                         </tbody>
                     </table>
                 </div>
-                {{--                <div style="width: 320px;"> --}}
-                {{--                    <table> --}}
-                {{--                        <tbody> --}}
-                {{--                            <tr> --}}
-                {{--                                <td class="text-sm text-right"> --}}
-                {{--                                    <span class="font-bold">Office:</span> {{ $project->office_display_address }} --}}
-                {{--                                </td> --}}
-                {{--                            </tr> --}}
-                {{--                            <tr> --}}
-                {{--                                <td class="text-sm text-right"> --}}
-                {{--                                    <span class="font-bold">Site:</span> {{ $project->site_display_address }} --}}
-                {{--                                </td> --}}
-                {{--                            </tr> --}}
-                {{--                            @if ($project->email) --}}
-                {{--                                <tr> --}}
-                {{--                                    <td class="text-sm text-right"> --}}
-                {{--                                        <span class="font-bold">Email:</span> {{ $project->email }} --}}
-                {{--                                    </td> --}}
-                {{--                                </tr> --}}
-                {{--                            @endif --}}
-                {{--                        </tbody> --}}
-                {{--                    </table> --}}
-                {{--                </div> --}}
             </div>
 
             <div class="mt-4">
@@ -212,8 +205,7 @@
 
                 <div class="text-sm mt-2">
                     deposits below amount for {{ ucwords($transaction->unit->type) }} Number:
-                    <input value="{{ $transaction->unit->unit_no }}" class="my-input text-center"
-                        disabled>
+                    <input value="{{ $transaction->unit->unit_no }}" class="my-input text-center" disabled>
                     at <strong>"{{ $project->name }}"</strong>, accepting all the conditions by the developers for
                     becoming a member.
                 </div>
@@ -227,18 +219,17 @@
 
                 <div class="flex mt-2 items-center">
                     <label class="text-sm" style="width: 47%;">
-                        <span class="{{ $transaction->payment_type === 'cheque' ? '' : 'my-label' }}">Cheque No.</span>
-                        <span class="{{ $transaction->payment_type === 'bank_draft' ? '' : 'my-label' }}">/Draft
-                            No.</span>
-                        <span class="{{ $transaction->payment_type === 'rtgs' ? '' : 'my-label' }}">/RTGS No.</span>
-                        <span class="{{ $transaction->payment_type === 'neft' ? '' : 'my-label' }}">/NEFT No.</span>
-                        <span class="{{ $transaction->payment_type === 'imps' ? '' : 'my-label' }}">/IMPS</span>
-                        <span class="{{ $transaction->payment_type === 'cash' ? '' : 'my-label' }}">/Cash</span>:
+                        <span class="{{ $paymentType === 'cheque' ? '' : 'my-label' }}">Cheque No.</span>
+                        <span class="{{ $paymentType === 'bank_draft' ? '' : 'my-label' }}">/Draft No.</span>
+                        <span class="{{ $paymentType === 'rtgs' ? '' : 'my-label' }}">/RTGS No.</span>
+                        <span class="{{ $paymentType === 'neft' ? '' : 'my-label' }}">/NEFT No.</span>
+                        <span class="{{ $paymentType === 'imps' ? '' : 'my-label' }}">/IMPS</span>
+                        <span class="{{ $paymentType === 'cash' ? '' : 'my-label' }}">/Cash</span>:
                     </label>
                     <input value="{{ $transaction->payment_reference }}" class="my-input text-center" disabled>
                     <label class="text-sm ml-4 text-left">Date:</label>
                     <input value="{{ Carbon::parse($transaction->payment_date)->format('d-m-Y') }}"
-                        class="my-input w-[80px] text-center" disabled>
+                        class="my-input text-center" style="width: 80px;" disabled>
                 </div>
 
                 <div class="flex mt-2">
@@ -249,13 +240,13 @@
 
                 <div class="flex mt-2 items-center">
                     <label class="text-base font-bold mt-4">Amount:</label>
-                    <input value="₹{{ $transaction->transaction_amount }}"
+                    <input value="&#8377;{{ formatCurrency($transaction->transaction_amount) }}"
                         class="my-input border-dashed ml-4 w-48 text-center h-8" disabled>
                 </div>
 
                 <div class="flex justify-between">
                     <div class="mt-7 text-sm">
-                        @if ($transaction->payment_type === 'Cheque')
+                        @if ($paymentType === 'cheque')
                             <p class="font-bold">Note: The receipt will be valid only after realization of cheque.</p>
                         @endif
                         <p class="mt-3">Subject to {{ $project->jurisdiction }} Jurisdiction</p>
@@ -266,7 +257,6 @@
                             style="width: 60px; height: 64px; margin-bottom: 20px; border: 2px dashed black;">
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -278,15 +268,17 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const box = document.querySelector('.contact-block');
             const maxH = 200; // px
             const minFS = 8; // px
-            let size = parseFloat(getComputedStyle(box).fontSize);
 
-            while (box.scrollHeight > maxH && size > minFS) {
-                size -= .5; // step down
-                box.style.fontSize = size + 'px';
-            }
+            document.querySelectorAll('.contact-block').forEach((box) => {
+                let size = parseFloat(getComputedStyle(box).fontSize);
+
+                while (box.scrollHeight > maxH && size > minFS) {
+                    size -= .5; // step down
+                    box.style.fontSize = size + 'px';
+                }
+            });
         });
     </script>
 </body>

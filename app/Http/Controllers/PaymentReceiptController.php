@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Transaction;
-use Illuminate\Support\Facades\Storage;
-use Spatie\Browsershot\Browsershot;
+use Illuminate\Support\Str;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 class PaymentReceiptController extends Controller
 {
@@ -14,61 +14,69 @@ class PaymentReceiptController extends Controller
         $transaction = Transaction::with('customer', 'unit')->findOrFail($transactionId);
         $project = Project::findOrFail($projectId);
 
-        // Optional: Use first unit linked to customer
-        $unit = $transaction->customer->units->first();
-
-        // Check if the user has permission to access the project
         if (auth()->user()->organisation_id !== $project->organisation_id) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
         try {
-            // Render the Blade view to HTML
-             $html = view('receipt_BS', [
+            $fileName = Str::slug((string) ($transaction->receipt_number ?: 'receipt-'.$transaction->id));
+
+            return Pdf::view('receipt_BS', [
                 'project' => $project,
                 'transaction' => $transaction,
-            ])->render();
-
-            // Ensure directory exists
-            if (Storage::disk('public')->missing('receipts')) {
-                Storage::disk('public')->makeDirectory('receipts');
-            }
-
-            // File path
-            $filePath = storage_path('app/public/receipts/receipt_' . now()->timestamp . '.pdf');
-
-            $isWindows = strtoupper(substr(PHP_OS, 0, 3)) === 'WIN';
-
-            // Use Browsershot to generate PDF
-            if ($isWindows) {
-                Browsershot::html($html)
-                    ->format('A4')
-                    ->save($filePath);
-            } else {
-                Browsershot::html($html)
-                    ->setNodeBinary('/usr/local/bin/node')
-                    ->setNpmBinary('/usr/local/bin/npm')
-                    ->setChromePath('/usr/bin/chromium-browser')
-                    ->noSandbox()
-                    ->addChromiumArguments([
-                        '--user-data-dir=/tmp',
-                        '--disable-crash-reporter',
-                        '--no-sandbox',
-                    ])
-                    ->format('A4')
-                    ->save($filePath);
-            }
-
-            // Check file and return download response
-            if (!file_exists($filePath)) {
-                return response()->json(['error' => 'PDF file could not be created.'], 500);
-            }
-
-            return response()->download($filePath)->deleteFileAfterSend(true);
-
-        } catch (\Exception $e) {
-            // return response()->json(['error' => 'Failed to generate PDF'], 500);
-              return response()->json(['error' => 'Failed to generate PDF: ' . $e->getMessage()], 500);
+                'projectLogoSrc' => $this->resolveProjectLogoSrc($project),
+            ])
+                ->driver('cloudflare')
+                ->format('a4')
+                ->name($fileName.'.pdf')
+                ->download();
+        } catch (\Throwable $e) {
+            return response()->json(['error' => 'Failed to generate PDF: '.$e->getMessage()], 500);
         }
+    }
+
+    private function resolveProjectLogoSrc(Project $project): ?string
+    {
+        $rawPath = $project->getRawOriginal('logo');
+
+        if (blank($rawPath)) {
+            return null;
+        }
+
+        $normalizedPath = Str::of($rawPath)
+            ->replace('\\', '/')
+            ->ltrim('/')
+            ->value();
+
+        $storageRelativePath = ltrim(Str::replaceFirst('storage/', '', $normalizedPath), '/');
+        $storageFilePath = storage_path('app/public/'.$storageRelativePath);
+
+        if (is_file($storageFilePath)) {
+            return $this->fileToDataUri($storageFilePath);
+        }
+
+        $publicFilePath = public_path($normalizedPath);
+
+        if (is_file($publicFilePath)) {
+            return $this->fileToDataUri($publicFilePath);
+        }
+
+        if (filter_var($normalizedPath, FILTER_VALIDATE_URL)) {
+            return $normalizedPath;
+        }
+
+        return asset($normalizedPath);
+    }
+
+    private function fileToDataUri(string $filePath): ?string
+    {
+        $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
+        $contents = file_get_contents($filePath);
+
+        if ($contents === false) {
+            return null;
+        }
+
+        return 'data:'.$mimeType.';base64,'.base64_encode($contents);
     }
 }
