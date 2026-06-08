@@ -132,7 +132,7 @@ const resetForm = () => {
                                     v-model="form.rera_no" :error="errors.rera_no" :required="true" />
                             </div>
 
-                            <!-- Submit & Reset Buttons -->
+                            <!-- Submit & Reset Button -->
                             <div class="flex flex-wrap justify-between mt-6 gap-4">
                                 <button type="submit"
                                     class="text-white bg-primary hover:bg-teal-800 focus:ring-4 focus:ring-teal-700 font-medium rounded-lg text-sm md:text-base px-10 py-2.5 md:px-[10rem]">
