@@ -1,6 +1,5 @@
 <?php
 
-use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -18,11 +17,11 @@ if (! function_exists('processLogoImage')) {
     {
         try {
             // Generate snake_case filename with timestamp
-            $fileName = Str::slug($organisationName).'_'.now()->timestamp.'.webp';
+            $fileName = Str::slug($organisationName) . '_' . now()->timestamp . '.webp';
 
             // Define storage path
-            $directory = storage_path('app/public/'.$folder.'/');
-            $storagePath = $directory.$fileName;
+            $directory = storage_path('app/public/' . $folder . '/');
+            $storagePath = $directory . $fileName;
 
             // Ensure directory exists
             if (! File::isDirectory($directory)) {
@@ -37,10 +36,10 @@ if (! function_exists('processLogoImage')) {
             $encodedImage->save($storagePath);
 
             // Return the relative path for storage access
-            return 'storage/'.$folder.'/'.$fileName;
-        } catch (Exception $e) {
+            return 'storage/' . $folder . '/' . $fileName;
+        } catch (\Exception $e) {
             // Log the error if needed
-            throw new Exception('Error Processing Logo: '.$e->getMessage());
+            throw new Exception('Error Processing Logo: ' . $e->getMessage());
         }
     }
 }
