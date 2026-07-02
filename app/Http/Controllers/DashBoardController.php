@@ -30,10 +30,10 @@ class DashBoardController extends Controller
 
             foreach ($project->units as $unit) {
                 if ($unit->total_amount) {
-                    foreach ($unit->transactions as $transaction) {
-                        $paidAmountOfunits += (float) $transaction->transaction_amount;
-                    }
-                    // dd($paidAmountOfunits,$unit->toArray());
+                    $paidAmountOfunits += (float) $unit->transactions
+                        ->whereNull('deleted_at')
+                        ->sum('transaction_amount');
+                    // dd($paidAmountOfunits, $unit->toArray());
                     $totalUnitAmount += (float) ($unit->total_amount ?? 0);
                 }
             }
