@@ -22,9 +22,27 @@ class Unit extends Model
         return $this->belongsTo(Customer::class);
     }
 
+    /**
+     * Transactions shown in history screens.
+     *
+     * Keep deleted transactions here so the UI can show them with a strikethrough
+     * and receipt numbers are not reused. Do not use this relation for received /
+     * due amount calculations.
+     */
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class)->withTrashed();
+    }
+
+    /**
+     * Only active transactions.
+     *
+     * Use this relation for payment totals so soft-deleted receipts do not affect
+     * Base / GST / Total received and due amounts.
+     */
+    public function activeTransactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
     }
 
     public function project(): BelongsTo
@@ -50,18 +68,14 @@ class Unit extends Model
     protected function baseReceivedAmount(): Attribute
     {
         return Attribute::make(
-            get: function () {
-                return $this->transactions()->where('gst', false)->sum('transaction_amount');
-            },
+            get: fn () => $this->baseReceivedTotal(),
         );
     }
 
     protected function gstReceivedAmount(): Attribute
     {
         return Attribute::make(
-            get: function () {
-                return $this->transactions()->where('gst', true)->sum('transaction_amount');
-            },
+            get: fn () => $this->gstReceivedTotal(),
         );
     }
 
@@ -96,7 +110,7 @@ class Unit extends Model
     {
         return Attribute::make(
             get: function () {
-                return formatCurrency($this->transactions()->sum('transaction_amount'));
+                return formatCurrency($this->totalReceivedTotal());
             },
         );
     }
@@ -105,7 +119,7 @@ class Unit extends Model
     {
         return Attribute::make(
             get: function () {
-                return formatCurrency($this->transactions()->where('gst', false)->sum('transaction_amount'));
+                return formatCurrency($this->baseReceivedTotal());
             },
         );
     }
@@ -114,7 +128,7 @@ class Unit extends Model
     {
         return Attribute::make(
             get: function () {
-                return formatCurrency($this->transactions()->where('gst', true)->sum('transaction_amount'));
+                return formatCurrency($this->gstReceivedTotal());
             },
         );
     }
@@ -123,7 +137,7 @@ class Unit extends Model
     {
         return Attribute::make(
             get: function () {
-                return formatCurrency($this->base_amount - ($this->transactions()->where('gst', false)->sum('transaction_amount')));
+                return formatCurrency((float) $this->base_amount - $this->baseReceivedTotal());
             },
         );
     }
@@ -132,7 +146,7 @@ class Unit extends Model
     {
         return Attribute::make(
             get: function () {
-                return formatCurrency($this->gst_amount - ($this->transactions()->where('gst', true)->sum('transaction_amount')));
+                return formatCurrency((float) $this->gst_amount - $this->gstReceivedTotal());
             },
         );
     }
@@ -141,9 +155,32 @@ class Unit extends Model
     {
         return Attribute::make(
             get: function () {
-                return formatCurrency($this->total_amount - ($this->transactions()->sum('transaction_amount')));
+                return formatCurrency((float) $this->total_amount - $this->totalReceivedTotal());
             },
         );
+    }
+
+
+    private function baseReceivedTotal(): float
+    {
+        return $this->receivedTotal(false);
+    }
+
+    private function gstReceivedTotal(): float
+    {
+        return $this->receivedTotal(true);
+    }
+
+    private function totalReceivedTotal(): float
+    {
+        return (float) $this->activeTransactions()->sum('transaction_amount');
+    }
+
+    private function receivedTotal(bool $gst): float
+    {
+        return (float) $this->activeTransactions()
+            ->where('gst', $gst)
+            ->sum('transaction_amount');
     }
 
     // Managing Soft Deletes
