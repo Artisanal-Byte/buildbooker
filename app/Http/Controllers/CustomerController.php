@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\Unit;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Intervention\Image\Origin;
 
@@ -55,7 +56,7 @@ class CustomerController extends Controller
         $validated = $request->validate([
             'name' => 'required|string',
             'email' => 'nullable|email',
-            'mobile' => 'nullable|digits:10',
+            'mobile' => ['required', 'digits:10', Rule::unique('customers', 'mobile')],
             'address' => 'nullable|string',
             'project_id' => 'required|exists:projects,id'
         ]);
@@ -85,14 +86,10 @@ class CustomerController extends Controller
 
     public function update(Request $request, Customer $customer)
     {
-        if ($customer->mobile !== $request->mobile) {
-            $request->validate([
-                'mobile' => 'required|digits_between:7,15|regex:/^[0-9]+$/|unique:customers,mobile',
-            ]);
-        }
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:customers,email,' . $customer->id,
+            'mobile' => ['required', 'digits:10', Rule::unique('customers', 'mobile')->ignore($customer->id)],
             'address' => 'nullable|string|max:500',
         ]);
         
